@@ -1,7 +1,8 @@
-FROM ubuntu:18.04
+FROM kong:2.8.3-ubuntu
 # docker images for debugging kong plugin
 # based on http://lua-programming.blogspot.co.id/2015/12/how-to-debug-kong-plugins-on-windows.html and https://github.com/Kong/kong-vagrant
 
+USER root
 # global dependency
 RUN apt-get update &&\
 	apt-get install -y \
@@ -29,25 +30,11 @@ RUN apt-get update &&\
 	rsync \
 	zlib1g-dev 
 
-# install zerobrane
-ARG ZEROBRANE_VERSION 
-ENV ZEROBRANE_VERSION ${ZEROBRANE_VERSION:-1.90}
-RUN apt-get install -y sudo &&\
-	mkdir -p /tmp/zerobrane/ &&\
-	curl https://download.zerobrane.com/ZeroBraneStudioEduPack-${ZEROBRANE_VERSION}-linux.sh -o /tmp/zerobrane/zerobrane.sh &&\
-	chmod +x /tmp/zerobrane/zerobrane.sh &&\
-	/tmp/zerobrane/zerobrane.sh
-
 # install kong and prepare development environment
 ARG KONG_VERSION
 ENV KONG_VERSION ${KONG_VERSION:-2.0.0}
 ENV KONG_SRC_PATH /usr/local/src/kong 
 RUN echo "Fetching and installing Kong..." &&\
-	set +o errexit &&\
-	wget -q -O kong.deb https://bintray.com/kong/kong-deb/download_file?file_path=kong-${KONG_VERSION}.bionic.amd64.deb &&\
-	set -o errexit &&\
-	dpkg -i kong.deb &&\
-	rm kong.deb &&\
 	git clone https://github.com/Kong/kong $KONG_SRC_PATH &&\
 	cd $KONG_SRC_PATH &&\
 	git checkout ${KONG_VERSION} &&\
