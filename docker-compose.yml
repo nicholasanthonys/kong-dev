@@ -5,4 +5,4 @@ services:
       context: .
       args:
         - KONG_VERSION=2.8.3
-    image: nicholasas/kong-dev-onbuild:2.8.3
+    image: nicholasas/kong-dev-onbuild:2.8.3-ubuntu
