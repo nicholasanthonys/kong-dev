@@ -28,18 +28,21 @@ RUN apt-get update &&\
 	m4 \
 	cpanminus \
 	rsync \
-	zlib1g-dev 
+	build-essential \
+	patch \
+	libyaml-dev
 
 # install kong and prepare development environment
+RUN echo "cloning kong.."
 ARG KONG_VERSION
 ENV KONG_VERSION ${KONG_VERSION:-2.0.0}
 ENV KONG_SRC_PATH /usr/local/src/kong 
 RUN echo "Fetching and installing Kong..." &&\
-	git clone https://github.com/Kong/kong $KONG_SRC_PATH &&\
+	git clone -b release/2.8.x https://github.com/Kong/kong $KONG_SRC_PATH &&\
 	cd $KONG_SRC_PATH &&\
-	git checkout ${KONG_VERSION} &&\
 	make dev
 
+RUN luarocks install mobdebug
 # final preparation
 ENV PATH $PATH:/usr/local/bin:/usr/local/openresty/bin:/opt/stap/bin:/usr/local/stapxx:/usr/local/openresty/nginx/sbin
 ENV KONG_LOG_LEVEL debug
